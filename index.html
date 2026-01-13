@@ -1,0 +1,27 @@
+<input id="url" placeholder="https://example.com">
+<button onclick="convert()">Convert to PDF</button>
+<p id="status"></p>
+
+<script>
+async function convert(){
+  const url = document.getElementById("url").value.trim();
+  if(!url){ alert("Enter URL"); return; }
+
+  document.getElementById("status").innerText="Processing...";
+
+  const res = await fetch("https://YOUR-SERVER-IP:3000/api/url-to-pdf",{
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body:JSON.stringify({ url })
+  });
+
+  const data = await res.json();
+
+  if(data.success){
+    window.location.href =
+      "https://YOUR-SERVER-IP:3000" + data.download;
+  }else{
+    document.getElementById("status").innerText="Failed!";
+  }
+}
+</script>
