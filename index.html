@@ -1,255 +1,165 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Professional URL to PDF Converter</title>
+<title>URL to PDF Converter</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<!-- Google Fonts -->
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<!-- HTML2PDF Library -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
-/* =========================================
-   1. GLOBAL STYLES
-========================================= */
-:root {
-    --primary: #2563eb;
-    --primary-dark: #1e40af;
-    --secondary: #f8fafc;
-    --text-main: #0f172a;
-    --border: #e2e8f0;
-    --radius: 8px;
-    --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+*{box-sizing:border-box}
+body{
+margin:0;
+font-family:Inter,system-ui;
+background:#f1f5f9;
+color:#0f172a;
 }
-
-* { box-sizing: border-box; margin: 0; padding: 0; }
-
-body {
-    font-family: 'Inter', sans-serif;
-    background-color: #f1f5f9;
-    color: var(--text-main);
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
+.container{
+max-width:720px;
+margin:40px auto;
+background:#fff;
+padding:30px;
+border-radius:12px;
+box-shadow:0 20px 30px rgba(0,0,0,.08);
 }
-
-/* =========================================
-   2. NAVBAR
-========================================= */
-.navbar {
-    background: white;
-    border-bottom: 1px solid var(--border);
-    padding: 0 30px;
-    height: 60px;
-    display: flex;
-    align-items: center;
-    position: sticky;
-    top: 0;
-    z-index: 100;
+h1{
+margin:0 0 10px;
+font-size:26px;
+font-weight:700;
+color:#2563eb;
 }
-.logo { font-size: 1.2rem; font-weight: 700; color: var(--primary); display: flex; align-items: center; gap: 8px; }
-.badge { background: #eff6ff; color: var(--primary); font-size: 0.75rem; padding: 4px 8px; border-radius: 4px; font-weight: 600; margin-left: 10px; }
-
-/* =========================================
-   3. CONTROLS SECTION (TOP)
-========================================= */
-.controls-container {
-    background: white;
-    padding: 25px 30px;
-    border-bottom: 1px solid var(--border);
-    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+p{
+margin:0 0 25px;
+color:#475569;
+font-size:15px;
 }
-
-.controls-grid {
-    display: grid;
-    grid-template-columns: 2fr 1fr 1fr 1fr; /* Layout columns */
-    gap: 20px;
-    align-items: end;
-    max-width: 1400px;
-    margin: 0 auto;
+label{
+font-weight:600;
+font-size:14px;
+display:block;
+margin-bottom:6px;
 }
-
-.input-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 6px; color: #64748b; }
-.form-control {
-    width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--radius);
-    font-family: inherit; font-size: 0.95rem; background: #fff;
+input{
+width:100%;
+padding:12px 14px;
+border:1px solid #cbd5f5;
+border-radius:8px;
+font-size:15px;
 }
-.form-control:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
-
-.btn {
-    width: 100%; padding: 11px; border: none; border-radius: var(--radius);
-    font-weight: 600; cursor: pointer; font-size: 0.95rem;
-    transition: all 0.2s; display: flex; justify-content: center; align-items: center; gap: 8px;
+input:focus{
+outline:none;
+border-color:#2563eb;
+box-shadow:0 0 0 3px rgba(37,99,235,.15);
 }
-.btn-fetch { background: #334155; color: white; }
-.btn-fetch:hover { background: #1e293b; }
-
-.btn-download { background: var(--primary); color: white; }
-.btn-download:hover { background: var(--primary-dark); transform: translateY(-1px); }
-.btn-download:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
-
-/* Status Box */
-.status-bar {
-    max-width: 1400px; margin: 15px auto 0; padding: 10px 15px; border-radius: var(--radius);
-    font-size: 0.9rem; display: none;
+button{
+width:100%;
+margin-top:20px;
+padding:14px;
+border:none;
+border-radius:10px;
+font-size:16px;
+font-weight:600;
+cursor:pointer;
+background:#2563eb;
+color:#fff;
+transition:.2s;
 }
-.status-error { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
-.status-info { background: #eff6ff; color: #1e40af; border: 1px solid #dbeafe; }
-
-/* =========================================
-   4. PREVIEW SECTION (BOTTOM)
-========================================= */
-.preview-container {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-    padding: 40px 20px;
-    background: #e2e8f0; /* Darker bg to make paper pop */
-    overflow-y: auto;
+button:hover{
+background:#1e40af;
 }
-
-.paper-wrapper {
-    background: white;
-    width: 210mm; /* A4 Standard Width */
-    min-height: 297mm;
-    padding: 0;
-    box-shadow: var(--shadow);
-    position: relative;
-    /* Clean Rendering Fixes */
-    -webkit-font-smoothing: antialiased;
-    text-rendering: optimizeLegibility;
+button:disabled{
+opacity:.6;
+cursor:not-allowed;
 }
-
-/* Browser Header Look */
-.browser-header {
-    background: #f8fafc; padding: 10px 15px; border-bottom: 1px solid #e2e8f0;
-    display: flex; gap: 6px; align-items: center; border-radius: 8px 8px 0 0;
+.status{
+margin-top:20px;
+padding:12px;
+border-radius:8px;
+font-size:14px;
+display:none;
 }
-.dot { width: 10px; height: 10px; border-radius: 50%; }
-.dot-red { background: #ef4444; }
-.dot-yellow { background: #f59e0b; }
-.dot-green { background: #10b981; }
-.address-bar {
-    flex: 1; background: white; height: 24px; border-radius: 4px; margin-left: 10px; border: 1px solid #cbd5e1;
-    font-size: 0.75rem; color: #94a3b8; display: flex; align-items: center; padding-left: 10px;
+.info{
+background:#eff6ff;
+color:#1e40af;
+border:1px solid #dbeafe;
 }
-
-#render-content {
-    width: 100%;
-    min-height: 800px;
-    overflow: hidden;
-    background: white;
-    /* Ensure styles don't spill */
-    isolation: isolate; 
+.error{
+background:#fef2f2;
+color:#991b1b;
+border:1px solid #fecaca;
 }
-
-/* Loading Overlay */
-.loader-overlay {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(255, 255, 255, 0.85); z-index: 1000;
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    backdrop-filter: blur(4px); display: none;
-}
-.spinner {
-    width: 50px; height: 50px; border: 5px solid #cbd5e1; border-top-color: var(--primary);
-    border-radius: 50%; animation: spin 0.8s linear infinite;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
-
-/* Responsive adjustments */
-@media (max-width: 1000px) {
-    .controls-grid { grid-template-columns: 1fr 1fr; }
-}
-@media (max-width: 600px) {
-    .controls-grid { grid-template-columns: 1fr; }
-    .paper-wrapper { width: 100%; }
+.footer{
+margin-top:25px;
+font-size:12px;
+color:#64748b;
+text-align:center;
 }
 </style>
 </head>
+
 <body>
 
-<!-- Navbar -->
-<nav class="navbar">
-    <div class="logo">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-        URL to PDF
-    </div>
-    <div class="badge">V2.1 Fixed</div>
-</nav>
+<div class="container">
+  <h1>URL to PDF Converter</h1>
+  <p>Convert any public website into a high-quality PDF file.</p>
 
-<!-- Controls Section (Top) -->
-<section class="controls-container">
-    <div class="controls-grid">
-        
-        <!-- URL Input -->
-        <div class="input-group">
-            <label>1. Website URL</label>
-            <div style="display:flex; gap:10px;">
-                <input type="url" id="urlInput" class="form-control" placeholder="https://example.com" value="https://en.wikipedia.org/wiki/Internet">
-                <button id="fetchBtn" class="btn btn-fetch" style="width: auto;">Fetch</button>
-            </div>
-        </div>
+  <label for="url">Website URL</label>
+  <input id="url" type="url" placeholder="https://example.com">
 
-        <!-- Filename -->
-        <div class="input-group">
-            <label>Filename</label>
-            <input type="text" id="filenameInput" class="form-control" value="webpage-document">
-        </div>
+  <button id="convertBtn">Convert to PDF</button>
 
-        <!-- Options -->
-        <div class="input-group">
-            <label>Paper Size</label>
-            <select id="pageSize" class="form-control">
-                <option value="a4">A4</option>
-                <option value="letter">Letter</option>
-                <option value="legal">Legal</option>
-            </select>
-        </div>
+  <div id="status" class="status"></div>
 
-        <!-- Download -->
-        <div class="input-group">
-            <label>&nbsp;</label> <!-- Spacer -->
-            <button id="downloadBtn" class="btn btn-download" disabled>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                Download PDF
-            </button>
-        </div>
-    </div>
-    
-    <!-- Status Message -->
-    <div id="statusBox" class="status-bar"></div>
-
-    <!-- Hidden Layout Options (Defaults) -->
-    <select id="orientation" style="display:none;"><option value="portrait">Portrait</option></select>
-    <input type="number" id="marginInput" value="0" style="display:none;">
-</section>
-
-<!-- Preview Section (Bottom) -->
-<main class="preview-container">
-    <div class="paper-wrapper" id="pdfContainer">
-        
-        <!-- Fake Browser Header -->
-        <div class="browser-header">
-            <div class="dot dot-red"></div>
-            <div class="dot dot-yellow"></div>
-            <div class="dot dot-green"></div>
-            <div class="address-bar" id="displayUrl">Live Preview Area</div>
-        </div>
-
-        <!-- Content Render Area -->
-        <div id="render-content">
-            <div style="text-align:center; padding:100px 20px; color:#94a3b8;">
-                <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" style="margin-bottom:15px;"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
-                <h3>Website Preview</h3>
-                <p style="font-size:1rem;">Enter URL above and click "Fetch" to see the content here.</p>
-            </div>
-        </div>
-    </div>
-</main>
-
-<!-- Loader Overlay -->
-<div id="loader" class="loader-overlay">
-    <div class="spinner"></div>
-    <div id="loaderText" style="margin-top:20px; font-weight:600; font-size:1.2rem; color:#475569;">Processing...</div>
+  <div class="footer">
+    Note: Login, banking & private websites are not supported.
+  </div>
 </div>
+
+<script>
+const btn = document.getElementById("convertBtn");
+const statusBox = document.getElementById("status");
+
+function showStatus(msg,type){
+  statusBox.className = "status " + type;
+  statusBox.style.display = "block";
+  statusBox.innerHTML = msg;
+}
+
+btn.onclick = async () => {
+  let url = document.getElementById("url").value.trim();
+
+  if(!url){
+    showStatus("Please enter a valid URL","error");
+    return;
+  }
+  if(!url.startsWith("http")) url = "https://" + url;
+
+  btn.disabled = true;
+  showStatus("Generating PDF, please wait...","info");
+
+  try{
+    const res = await fetch("https://YOUR-SERVER-IP:3000/api/url-to-pdf",{
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body:JSON.stringify({ url })
+    });
+
+    const data = await res.json();
+
+    if(data.success){
+      showStatus("PDF ready. Download will start automatically.","info");
+      window.location.href = "https://YOUR-SERVER-IP:3000" + data.download;
+    }else{
+      showStatus("Failed to generate PDF.","error");
+    }
+  }catch(e){
+    showStatus("Server error. Please try again later.","error");
+  }
+
+  btn.disabled = false;
+};
+</script>
+
+</body>
+</html>
