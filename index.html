@@ -87,7 +87,7 @@ btn.onclick = async ()=>{
  show("Generating PDF...","info");
 
  try{
-   const API = "https://api-docready.onrender.com/api/url-to-pdf"; 
+   const API = "https://url-to-pdf-ip38.onrender.com"; 
    const res = await fetch(API,{
      method:"POST",
      headers:{ "Content-Type":"application/json" },
@@ -96,7 +96,7 @@ btn.onclick = async ()=>{
    const data = await res.json();
 
    if(data.success){
-     window.location.href = "https://api-docready.onrender.com" + data.download;
+     window.location.href = "https://url-to-pdf-ip38.onrender.com" + data.download;
    }else{
      show("PDF generation failed","error");
    }
@@ -109,3 +109,4 @@ btn.onclick = async ()=>{
 
 </body>
 </html>
+
