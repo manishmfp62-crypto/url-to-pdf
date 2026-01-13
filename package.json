@@ -1,7 +1,7 @@
-{
-  "name": "url-to-pdf",
+ {
+  "name": "url-to-pdf-server",
   "version": "1.0.0",
-  "description": "Professional URL to PDF API",
+  "description": "iLovePDF style URL to PDF engine",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
