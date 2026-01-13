@@ -1,56 +1,35 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>URL to PDF Converter</title>
+<title>URL to PDF Tool</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 
 <style>
-*{box-sizing:border-box}
 body{
 margin:0;
 font-family:Inter,system-ui;
 background:#f1f5f9;
-color:#0f172a;
 }
-.container{
+.box{
 max-width:720px;
-margin:40px auto;
+margin:50px auto;
 background:#fff;
 padding:30px;
-border-radius:12px;
-box-shadow:0 20px 30px rgba(0,0,0,.08);
+border-radius:14px;
+box-shadow:0 20px 30px rgba(0,0,0,.1);
 }
-h1{
-margin:0 0 10px;
-font-size:26px;
-font-weight:700;
-color:#2563eb;
-}
-p{
-margin:0 0 25px;
-color:#475569;
-font-size:15px;
-}
-label{
-font-weight:600;
-font-size:14px;
-display:block;
-margin-bottom:6px;
-}
+h1{margin:0;color:#2563eb}
+p{color:#475569}
 input{
 width:100%;
-padding:12px 14px;
-border:1px solid #cbd5f5;
+padding:14px;
+margin-top:10px;
 border-radius:8px;
+border:1px solid #cbd5f5;
 font-size:15px;
-}
-input:focus{
-outline:none;
-border-color:#2563eb;
-box-shadow:0 0 0 3px rgba(37,99,235,.15);
 }
 button{
 width:100%;
@@ -58,109 +37,75 @@ margin-top:20px;
 padding:14px;
 border:none;
 border-radius:10px;
+background:#2563eb;
+color:#fff;
 font-size:16px;
 font-weight:600;
 cursor:pointer;
-background:#2563eb;
-color:#fff;
-transition:.2s;
 }
-button:hover{
-background:#1e40af;
-}
-button:disabled{
-opacity:.6;
-cursor:not-allowed;
-}
+button:disabled{opacity:.6}
 .status{
 margin-top:20px;
 padding:12px;
 border-radius:8px;
-font-size:14px;
 display:none;
+font-size:14px;
 }
-.info{
-background:#eff6ff;
-color:#1e40af;
-border:1px solid #dbeafe;
-}
-.error{
-background:#fef2f2;
-color:#991b1b;
-border:1px solid #fecaca;
-}
-.footer{
-margin-top:25px;
-font-size:12px;
-color:#64748b;
-text-align:center;
-}
+.info{background:#eff6ff;color:#1e40af}
+.error{background:#fef2f2;color:#991b1b}
 </style>
 </head>
 
 <body>
 
-<div class="container">
+<div class="box">
   <h1>URL to PDF Converter</h1>
-  <p>Convert any public website into a high-quality PDF file.</p>
+  <p>Convert any public website into a PDF.</p>
 
-  <label for="url">Website URL</label>
-  <input id="url" type="url" placeholder="https://example.com">
-
-  <button id="convertBtn">Convert to PDF</button>
+  <input id="url" placeholder="https://example.com">
+  <button id="btn">Convert to PDF</button>
 
   <div id="status" class="status"></div>
-
-  <div class="footer">
-    Note: Login, banking & private websites are not supported.
-  </div>
 </div>
 
 <script>
-const btn = document.getElementById("convertBtn");
+const btn = document.getElementById("btn");
 const statusBox = document.getElementById("status");
 
-function showStatus(msg,type){
-  statusBox.className = "status " + type;
-  statusBox.style.display = "block";
-  statusBox.innerHTML = msg;
+function show(msg,type){
+ statusBox.className="status "+type;
+ statusBox.style.display="block";
+ statusBox.innerHTML=msg;
 }
 
-btn.onclick = async () => {
-  let url = document.getElementById("url").value.trim();
+btn.onclick = async ()=>{
+ let url = document.getElementById("url").value.trim();
+ if(!url) return show("Please enter a URL","error");
+ if(!url.startsWith("http")) url="https://"+url;
 
-  if(!url){
-    showStatus("Please enter a valid URL","error");
-    return;
-  }
-  if(!url.startsWith("http")) url = "https://" + url;
+ btn.disabled=true;
+ show("Generating PDF...","info");
 
-  btn.disabled = true;
-  showStatus("Generating PDF, please wait...","info");
+ try{
+   const API = "https://api-docready.onrender.com/api/url-to-pdf"; 
+   const res = await fetch(API,{
+     method:"POST",
+     headers:{ "Content-Type":"application/json" },
+     body:JSON.stringify({ url })
+   });
+   const data = await res.json();
 
-  try{
-    const res = await fetch("https://manishmfp62-crypto.github.io/url-to-pdf/",{
-      method:"POST",
-      headers:{ "Content-Type":"application/json" },
-      body:JSON.stringify({ url })
-    });
-
-    const data = await res.json();
-
-    if(data.success){
-      showStatus("PDF ready. Download will start automatically.","info");
-      window.location.href = "https://manishmfp62-crypto.github.io/url-to-pdf/" + data.download;
-    }else{
-      showStatus("Failed to generate PDF.","error");
-    }
-  }catch(e){
-    showStatus("Server error. Please try again later.","error");
-  }
-
-  btn.disabled = false;
+   if(data.success){
+     window.location.href = "https://api-docready.onrender.com" + data.download;
+   }else{
+     show("PDF generation failed","error");
+   }
+ }catch(e){
+   show("Server error","error");
+ }
+ btn.disabled=false;
 };
 </script>
 
 </body>
 </html>
-
