@@ -139,7 +139,7 @@ btn.onclick = async () => {
   showStatus("Generating PDF, please wait...","info");
 
   try{
-    const res = await fetch("https://YOUR-SERVER-IP:3000/api/url-to-pdf",{
+    const res = await fetch("https://manishmfp62-crypto.github.io/url-to-pdf/",{
       method:"POST",
       headers:{ "Content-Type":"application/json" },
       body:JSON.stringify({ url })
@@ -149,7 +149,7 @@ btn.onclick = async () => {
 
     if(data.success){
       showStatus("PDF ready. Download will start automatically.","info");
-      window.location.href = "https://YOUR-SERVER-IP:3000" + data.download;
+      window.location.href = "https://manishmfp62-crypto.github.io/url-to-pdf/" + data.download;
     }else{
       showStatus("Failed to generate PDF.","error");
     }
@@ -163,3 +163,4 @@ btn.onclick = async () => {
 
 </body>
 </html>
+
